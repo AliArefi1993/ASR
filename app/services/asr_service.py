@@ -11,8 +11,6 @@ class ASRService:
     def transcribe_audio(self, file_path: str):
         try:
             with wave.open(file_path, "rb") as wf:
-                if wf.getnchannels() != 1 or wf.getsampwidth() != 2 or wf.getcomptype() != "NONE":
-                    raise ValueError("Audio file must be in PCM mono format.")
                 
                 recognizer = KaldiRecognizer(self.model, wf.getframerate())
                 transcription = ""
