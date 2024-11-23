@@ -1,0 +1,12 @@
+[tool.poetry]
+name = "asr_service"
+version = "0.1.0"
+description = "A service for listening to voices"
+authors = ["Anonymous <anonymous@example.com>"]
+
+
+[tool.poetry.dependencies]
+python = "^3.10"
+faststream = "^0.5.30"
+aio-pika = "^9.5.0"
+vosk = "^0.3.45"

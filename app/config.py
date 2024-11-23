@@ -1,7 +1,7 @@
 
 import os
 
-RABBITMQ_HOST = os.getenv("RABBITMQ_HOST", "localhost")
+RABBITMQ_HOST = os.getenv("RABBITMQ_HOST", "rabbitmq")
 RABBITMQ_PORT = int(os.getenv("RABBITMQ_PORT", "5672"))
 
 ASR_QUEUE = "asr_task_queue"
