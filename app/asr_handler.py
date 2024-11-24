@@ -1,22 +1,22 @@
-from faststream.rabbit import RabbitBroker
-from faststream.rabbit.annotations import RabbitMessage
-from faststream import FastStream
-import json
-from config import RABBITMQ_HOST, TRANSLATION_QUEUE
+import os
+from services.asr_service import ASRService
+from config import AUDIO_TEMP_PATH, MODEL_PATH
+asr_service = ASRService(model_path=MODEL_PATH)
 
-
-broker = RabbitBroker(url=f"amqp://{RABBITMQ_HOST}")
-app = FastStream(broker)
-
-@broker.publisher(TRANSLATION_QUEUE)
-async def send_to_translation_queue(publish, transcription_text: str):
+def process_audio(audio_data):
     """
-    Publish transcription to the translation queue.
+    This function receives the audio data, saves it temporarily, and processes it with the ASR service.
     """
-    message = {"text": transcription_text}
-    await publish(message)  # FastStream handles message sending
+    try:
+        file_path = os.path.join(AUDIO_TEMP_PATH, "audio.wav")
+        
+        with open(file_path, "wb") as audio_file:
+            audio_file.write(audio_data)
 
-    print("Sent transcription to translation queue:", transcription_text)
+        asr_service.transcribe_audio(file_path)
+        transcription_text = asr_service.results.get('transcription')
 
-if __name__ == "__main__":
-    app.run()
+        return transcription_text
+        
+    except Exception as e:
+        print(f"Error processing audio: {e}")

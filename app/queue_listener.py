@@ -1,8 +1,9 @@
 from faststream.rabbit import RabbitBroker
 from faststream.rabbit.annotations import RabbitMessage
 from faststream import FastStream
-from asr_handler import send_to_translation_queue
-from config import RABBITMQ_HOST, ASR_QUEUE, TRANSLATION_QUEUE
+from services.asr_service import ASRService
+from asr_handler import process_audio
+from config import RABBITMQ_HOST, ASR_QUEUE, TRANSLATION_QUEUE, MODEL_PATH
 
 # Initialize FastStream broker
 broker = RabbitBroker(url=f"amqp://{RABBITMQ_HOST}")
@@ -15,17 +16,18 @@ async def process_audio_message(message: RabbitMessage):
     """
     print("Received new audio data for ASR processing.")
     body = message.body
-    await send_to_translation_queue(body)  # Ensure `process_audio` supports async if necessary
-    print("Audio processing completed.")
+    transcription_text = process_audio(body)
 
-@broker.publisher(TRANSLATION_QUEUE)
-async def send_to_translation_queue(publish, transcription_text: str):
-    """
-    Publish transcription to the translation queue.
-    """
     message = {"text": transcription_text}
-    await publish(message)
-    print(f"Sent transcription to translation queue: {transcription_text}")
+    await send_to_translation(message)
+    print("Sent Transcrip to translation service.")
+
+async def send_to_translation(message):
+    broker.connect()
+    await broker.publish(
+        message=message,
+        routing_key=TRANSLATION_QUEUE
+    )
 
 # Main entry point: Run FastStream app asynchronously
 async def main():
