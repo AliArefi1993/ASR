@@ -9,4 +9,4 @@ TRANSLATION_QUEUE = "translation_task_queue"
 RESPONSE_QUEUE = "response_queue"
 
 AUDIO_TEMP_PATH="app/temp/"
-MODEL_PATH="app/models/vosk-model-en-us-0.22-lgraph"
+MODEL_PATH="/app/app/models/vosk-model-en-us-0.22-lgraph"
