@@ -17,12 +17,14 @@ async def process_audio_message(message: RabbitMessage):
     import json
     print("Received new audio data for ASR processing.")
     body = message.body
-    message_data = json.loads(body)  # Assuming the message was JSON serialized
-    audio_data = message_data.get("audio_data").encode('latin1')  # Decode binary audio data
+    message_data = json.loads(body)
+    audio_data = message_data.get("audio_data").encode('latin1') 
     chain = message_data.get("chain")
+    request_id = message_data.get("request_id")
     transcription_text = process_audio(audio_data)
 
-    message = {"text": transcription_text, "chain": chain}
+    message = {"text": transcription_text, "chain": chain, "request_id": request_id}
+    print(f"transcription text is : {transcription_text}")
     await send_to_translation(message)
     print("Sent Transcrip to translation service.")
 
