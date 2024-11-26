@@ -1,7 +1,6 @@
 from faststream.rabbit import RabbitBroker
 from faststream.rabbit.annotations import RabbitMessage
 from faststream import FastStream
-from services.asr_service import ASRService
 from asr_handler import process_audio
 from config import RABBITMQ_HOST, ASR_QUEUE, TRANSLATION_QUEUE, MODEL_PATH
 
