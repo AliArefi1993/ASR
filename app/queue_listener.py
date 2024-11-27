@@ -3,6 +3,8 @@ from faststream.rabbit.annotations import RabbitMessage
 from faststream import FastStream
 from asr_handler import process_audio
 from config import RABBITMQ_HOST, ASR_QUEUE, TRANSLATION_QUEUE, MODEL_PATH
+from send_task_queue import send_to_translation
+import asyncio
 
 # Initialize FastStream broker
 broker = RabbitBroker(url=f"amqp://{RABBITMQ_HOST}")
@@ -27,23 +29,9 @@ async def process_audio_message(message: RabbitMessage):
     await send_to_translation(broker, message)
     print("Sent Transcrip to translation service.")
 
-async def send_to_translation(broker, message):
-    try:
-        await broker.publish(
-            message=message,
-            routing_key=TRANSLATION_QUEUE
-        )
-        print("Message published successfully.")
-    except asyncio.CancelledError:
-        print("Publish task was cancelled.")
-        raise 
-    except Exception as e:
-        print(f"An error occurred while publishing: {e}")
-
 # Main entry point: Run FastStream app asynchronously
 async def main():
     await app.run()
 
 if __name__ == "__main__":
-    import asyncio
     asyncio.run(main())  # Run the async main function
