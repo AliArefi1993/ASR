@@ -2,7 +2,7 @@ from faststream.rabbit import RabbitBroker
 from faststream.rabbit.annotations import RabbitMessage
 from faststream import FastStream
 from asr_handler import process_audio
-from config import RABBITMQ_HOST, ASR_QUEUE, TRANSLATION_QUEUE, MODEL_PATH
+from config import RABBITMQ_HOST, ASR_QUEUE,  RABBITMQ_USER, RABBITMQ_PASSWORD
 from send_task_queue import send_to_translation
 import asyncio
 import logging
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 # Initialize FastStream broker
-broker = RabbitBroker(url=f"amqp://{RABBITMQ_HOST}")
+broker = RabbitBroker(url=f"amqp://{RABBITMQ_USER}:{RABBITMQ_PASSWORD}@{RABBITMQ_HOST}")
 app = FastStream(broker)
 
 @broker.subscriber(ASR_QUEUE)
