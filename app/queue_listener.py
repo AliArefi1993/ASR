@@ -5,6 +5,11 @@ from asr_handler import process_audio
 from config import RABBITMQ_HOST, ASR_QUEUE, TRANSLATION_QUEUE, MODEL_PATH
 from send_task_queue import send_to_translation
 import asyncio
+import logging
+
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 # Initialize FastStream broker
 broker = RabbitBroker(url=f"amqp://{RABBITMQ_HOST}")
@@ -16,7 +21,7 @@ async def process_audio_message(message: RabbitMessage):
     Process audio data received from the ASR queue.
     """
     import json
-    print("Received new audio data for ASR processing.")
+    logger.info("Received new audio data for ASR processing.")
     body = message.body
     message_data = json.loads(body)
     audio_data = message_data.get("audio_data").encode('latin1') 
@@ -25,9 +30,9 @@ async def process_audio_message(message: RabbitMessage):
     transcription_text = process_audio(audio_data)
 
     message = {"text": transcription_text, "chain": chain, "request_id": request_id}
-    print(f"transcription text is : {transcription_text}")
+    logger.info(f"transcription text is : {transcription_text}")
     await send_to_translation(broker, message)
-    print("Sent Transcrip to translation service.")
+    logger.info("Sent Transcrip to translation service.")
 
 # Main entry point: Run FastStream app asynchronously
 async def main():

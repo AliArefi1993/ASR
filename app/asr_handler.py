@@ -2,6 +2,11 @@ import os
 from services.asr_service import ASRService
 from config import AUDIO_TEMP_PATH, MODEL_PATH
 asr_service = ASRService(model_path=MODEL_PATH)
+import logging
+
+
+logger = logging.getLogger(__name__)
+
 
 def process_audio(audio_data):
     """
@@ -19,4 +24,4 @@ def process_audio(audio_data):
         return transcription_text
         
     except Exception as e:
-        print(f"Error processing audio: {e}")
+        logger.error(f"Error processing audio: {e}")
