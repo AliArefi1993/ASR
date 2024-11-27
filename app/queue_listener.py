@@ -24,14 +24,21 @@ async def process_audio_message(message: RabbitMessage):
 
     message = {"text": transcription_text, "chain": chain, "request_id": request_id}
     print(f"transcription text is : {transcription_text}")
-    await send_to_translation(message)
+    await send_to_translation(broker, message)
     print("Sent Transcrip to translation service.")
 
-async def send_to_translation(message):
-    await broker.publish(
-        message=message,
-        routing_key=TRANSLATION_QUEUE
-    )
+async def send_to_translation(broker, message):
+    try:
+        await broker.publish(
+            message=message,
+            routing_key=TRANSLATION_QUEUE
+        )
+        print("Message published successfully.")
+    except asyncio.CancelledError:
+        print("Publish task was cancelled.")
+        raise 
+    except Exception as e:
+        print(f"An error occurred while publishing: {e}")
 
 # Main entry point: Run FastStream app asynchronously
 async def main():
