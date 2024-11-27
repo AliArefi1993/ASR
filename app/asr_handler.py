@@ -1,10 +1,11 @@
 import os
 from services.asr_service import ASRService
-from config import AUDIO_TEMP_PATH, MODEL_PATH
-asr_service = ASRService(model_path=MODEL_PATH)
+from config import AUDIO_TEMP_PATH, MODEL_PATH, MODEL_NAME
 import logging
 
 
+full_path = os.path.join(MODEL_PATH, MODEL_NAME)
+asr_service = ASRService(model_path=full_path)
 logger = logging.getLogger(__name__)
 
 
