@@ -28,7 +28,6 @@ async def process_audio_message(message: RabbitMessage):
     print("Sent Transcrip to translation service.")
 
 async def send_to_translation(message):
-    broker.connect()
     await broker.publish(
         message=message,
         routing_key=TRANSLATION_QUEUE
